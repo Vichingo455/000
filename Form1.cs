@@ -23,11 +23,16 @@ namespace _000
         public Form1()
         {
             //extract dll if they doesn't exists
-            if (!File.Exists(exeDir + "\\AxInterop.WMPLib.dll") || !File.Exists(exeDir + "\\Interop.WMPLib.dll"))
+            if (!File.Exists(exeDir + "\\AxInterop.WMPLib.dll"))
             {
-                Extract("_000", exeDir, "Resources", "AxInterop.WMPLib.dll");
-                Extract("_000", exeDir, "Resources", "Interop.WMPLib.dll");
+                File.Delete(exeDir + "\\AxInterop.WMPLib.dll");
             }
+            if (!File.Exists(exeDir + "\\Interop.WMPLib.dll"))
+            {
+                File.Delete(exeDir + "\\Interop.WMPLib.dll");
+            }
+            Extract("_000", exeDir, "Resources", "AxInterop.WMPLib.dll");
+            Extract("_000", exeDir, "Resources", "Interop.WMPLib.dll");
             InitializeComponent();
         }
         public static void Extract(string nameSpace, string outDirectory, string internalFilePath, string resourceName)
